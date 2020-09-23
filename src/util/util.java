@@ -26,7 +26,7 @@ public class util {
 
     public static void drawAlignRightText(Graphics g, String text, int x, int y) {
 
-        int fontOffset = (int) (g.getFont().getSize() * 0.58);
+        int fontOffset = (int) (g.getFont().getSize() * (7 / 12.0));
         g.drawString(text, x - text.length() * fontOffset, y);
     }
 }
