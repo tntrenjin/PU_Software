@@ -10,18 +10,20 @@ import java.io.IOException;
 import java.util.*;
 import java.awt.image.BufferedImage;
 
-public class Main
-{
+public class Main {
     static JFrame frame;
     static GameCanvas canvas;
 
-    public static void main(String[] args)
-    {
+    static Thread gameThread;
+
+    public static void main(String[] args) {
         initFrame();
+        initThread();
+
+        gameThread.start();
     }
 
-    public static void initFrame()
-    {
+    public static void initFrame() {
         frame = new JFrame();
 
         frame.setSize(1280, 720);
@@ -30,25 +32,24 @@ public class Main
         frame.setLocationRelativeTo(null);
 
         canvas = new GameCanvas();
-        canvas.addKeyListener(new KeyListener()
-        {
+        canvas.setFocusable(true);
+        canvas.requestFocusInWindow();
+        canvas.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent e)
-            {
+            public void keyTyped(KeyEvent e) {
 
             }
 
             @Override
-            public void keyPressed(KeyEvent e)
-            {
+            public void keyPressed(KeyEvent e) {
                 int key = e.getExtendedKeyCode();
 
-                System.out.println(key);
+                canvas.toggleJump();
+                //System.out.println(key);
             }
 
             @Override
-            public void keyReleased(KeyEvent e)
-            {
+            public void keyReleased(KeyEvent e) {
 
             }
         });
@@ -59,57 +60,42 @@ public class Main
         frame.setVisible(true);
     }
 
-    private static void loadFonts()
-    {
-        try
-        {
+    public static void initThread() {
+        gameThread = new Thread(canvas);
+    }
+
+    private static void loadFonts() {
+        try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/ARCADECLASSIC.TTF")));
-        } catch (IOException | FontFormatException e)
-        {
+        } catch (IOException | FontFormatException e) {
             System.out.println(e.getMessage());
         }
     }
 }
 
-class MenuCanvas extends Canvas
-{
-    //String[] imageNameList = new String[]{"d1", "floor"};
-    //Dictionary<String, BufferedImage> imageDict = new Hashtable<>();
-
-    public MenuCanvas()
-    {
-        //imageDict = util.loadImages(imageNameList);
-    }
-
-
-    public void paint(Graphics g)
-    {
-        g.drawString("123", 0, 10);
-    }
-
-}
-
-class GameCanvas extends JPanel
-{
+class GameCanvas extends JPanel implements Runnable {
     String[] imageNameList = new String[]{"d1", "d2", "d3", "d4", "dx1", "floor", "health", "cloud"};
     Dictionary<String, BufferedImage> imageDict;
 
     int x = 0;
-    int y = 0;
+    int jumpX = 0;
+    int jumpY = 0;
+    double jumpSpeed = 3.0;
+
     int level = 1;
     int speed = 1;
+    int score = 0;
 
     int padding = 45;
     int paddingTop = padding;
     int paddingLeft = padding;
     int paddingRight = 1280 - (int) (padding * 1.4); // x1.4 調整字體偏移
 
-    Cloud clouds[] = new Cloud[8];
-    Obstacle obstacles[] = new Obstacle[3];
+    Cloud[] clouds = new Cloud[8];
+    Obstacle[] obstacles = new Obstacle[1];
 
-    public GameCanvas()
-    {
+    public GameCanvas() {
         imageDict = util.loadImages(imageNameList);
 
         for (int i = 0; i < clouds.length; i++)
@@ -120,33 +106,43 @@ class GameCanvas extends JPanel
     }
 
     @Override
-    public void paint(Graphics g)
-    {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
         // Draw Dino
+        if (jumpX > 0) {
+            jumpY = getJumpY(jumpX);
+
+            jumpX++;
+            if (jumpY <= 0) {
+                jumpX = 0;
+            }
+        }
+
         if (x / 100 % 2 == 0)
-            g.drawImage(imageDict.get("d3"), 100, 507 - y, null);
+            g.drawImage(imageDict.get("d3"), 100, 507 - jumpY, null);
         else
-            g.drawImage(imageDict.get("d4"), 100, 507 - y, null);
+            g.drawImage(imageDict.get("d4"), 100, 507 - jumpY, null);
 
         // Draw clouds
-        for (int i = 0; i < clouds.length; i++)
-        {
-            clouds[i].update(level);
-            g.drawImage(imageDict.get("cloud"), clouds[i].x, clouds[i].y, null);
+        for (Cloud cloud : clouds) {
+            cloud.update(speed);
+            g.drawImage(imageDict.get("cloud"), cloud.x, cloud.y, null);
         }
 
         // Draw obstacles
-        for (int i = 0; i < obstacles.length; i++)
-        {
-            obstacles[i].update(level);
-            g.drawImage(imageDict.get(obstacles[i].type), obstacles[i].x, obstacles[i].y, null);
+        for (Obstacle obstacle : obstacles) {
+            obstacle.update(speed);
+            g.drawImage(imageDict.get(obstacle.type), obstacle.x, obstacle.y, null);
+
+            if (obstacle.x < 250 && obstacle.x > 80)
+                toggleJump();
         }
 
         // Draw Floor
         g.drawImage(imageDict.get("floor"), x % 1200, 550, null);
         g.drawImage(imageDict.get("floor"), x % 1200 + 1200, 550, null);
+        g.drawImage(imageDict.get("floor"), x % 1200 + 1200 * 2, 550, null);
 
         // Draw title text
         g.setColor(new Color(200, 200, 200));
@@ -157,7 +153,7 @@ class GameCanvas extends JPanel
 
         // Draw value text
         g.setFont(new Font("ARCADECLASSIC", Font.BOLD, paddingTop));
-        util.drawAlignRightText(g, Integer.toString(-x / 100), paddingRight, paddingTop + 35);
+        util.drawAlignRightText(g, Integer.toString(score / 100), paddingRight, paddingTop + 35);
         util.drawAlignRightText(g, Integer.toString(level), paddingRight, paddingTop + 105);
 
         // Draw health value
@@ -165,20 +161,33 @@ class GameCanvas extends JPanel
             g.drawImage(imageDict.get("health"), 35 * i + paddingLeft, 55, null);
 
 
-        level = (int) Math.floor(Math.pow(-x / 1000, 0.5)) + 1;
+        level = (int) Math.floor(Math.pow(score / 25.0, 0.5));
         speed = level * 2;
-        x -= level;
+        jumpSpeed = 5 - (level - 1) * 0.1;
+        x -= speed;
+    }
 
-        repaint();
-
-        try
-        {
-            Thread.sleep(10);
-
-        } catch (Exception e)
-        {
-            System.out.println(e.getMessage());
+    public void toggleJump() {
+        if (jumpX == 0) {
+            jumpX = 1;
         }
     }
 
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(10);
+                repaint();
+                score++;
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public int getJumpY(int x) {
+        return (int) -Math.pow((x / jumpSpeed - 9), 2) + 80;
+    }
 }

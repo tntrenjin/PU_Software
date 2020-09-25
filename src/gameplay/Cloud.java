@@ -1,29 +1,24 @@
 package gameplay;
 
-public class Cloud
-{
+public class Cloud {
     public int x, y;
+    double speed = 0.25;
 
-    public Cloud()
-    {
+    public Cloud() {
         reset();
     }
 
-    public void reset()
-    {
-        this.x = (int) (Math.random() * 1200);
+    public void reset() {
+        this.x = (int) (Math.random() * 1280 * 1.5);
         this.y = (int) (Math.random() * 360 + 100);
     }
 
-    public void update(int x)
-    {
-        this.x -= (int) Math.ceil(x * 0.2);
+    public void update(int x) {
+        this.x -= (int) Math.ceil(x * this.speed);
 
-        if (this.x < -75)
-        {
-            this.x = 1280 + (int) (Math.random() * 1000);
-            this.y = (int) (Math.random() * 360 + 100);
-
+        if (this.x < -75) {
+            reset();
+            this.x += 1280;
         }
     }
 }
