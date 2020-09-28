@@ -2,7 +2,7 @@ package gameplay;
 
 public class Cloud {
     public int x, y;
-    double speed = 0.25;
+    double speed = 0.1;
 
     public Cloud() {
         reset();

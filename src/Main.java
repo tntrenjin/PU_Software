@@ -75,13 +75,17 @@ public class Main {
 }
 
 class GameCanvas extends JPanel implements Runnable {
-    String[] imageNameList = new String[]{"d1", "d2", "d3", "d4", "dx1", "floor", "health", "cloud"};
+    String[] imageNameList = new String[]{"d1", "d2", "d3", "d4", "dx1", "fly_1", "fly_2", "floor", "health", "cloud"};
     Dictionary<String, BufferedImage> imageDict;
 
     int x = 0;
     int jumpX = 0;
     int jumpY = 0;
+    int dinoX = 100;
+    int dinoY = 0;
     double jumpSpeed = 3.0;
+
+    int cnt = 0;
 
     int level = 1;
     int speed = 1;
@@ -93,36 +97,23 @@ class GameCanvas extends JPanel implements Runnable {
     int paddingRight = 1280 - (int) (padding * 1.4); // x1.4 調整字體偏移
 
     Cloud[] clouds = new Cloud[8];
-    Obstacle[] obstacles = new Obstacle[1];
+    Obstacle[] obstacles = new Obstacle[2];
 
     public GameCanvas() {
         imageDict = util.loadImages(imageNameList);
 
-        for (int i = 0; i < clouds.length; i++)
+        for (int i = 0; i < clouds.length; i++) {
             clouds[i] = new Cloud();
+        }
 
-        for (int i = 0; i < obstacles.length; i++)
-            obstacles[i] = new Obstacle("dx1", i + 1);
+
+        obstacles[0] = new Obstacle("dx1", 1);
+        obstacles[1] = new Obstacle("fly", 1.35);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        // Draw Dino
-        if (jumpX > 0) {
-            jumpY = getJumpY(jumpX);
-
-            jumpX++;
-            if (jumpY <= 0) {
-                jumpX = 0;
-            }
-        }
-
-        if (x / 100 % 2 == 0)
-            g.drawImage(imageDict.get("d3"), 100, 507 - jumpY, null);
-        else
-            g.drawImage(imageDict.get("d4"), 100, 507 - jumpY, null);
 
         // Draw clouds
         for (Cloud cloud : clouds) {
@@ -133,9 +124,9 @@ class GameCanvas extends JPanel implements Runnable {
         // Draw obstacles
         for (Obstacle obstacle : obstacles) {
             obstacle.update(speed);
-            g.drawImage(imageDict.get(obstacle.type), obstacle.x, obstacle.y, null);
+            g.drawImage(imageDict.get(obstacle.getImageName()), obstacle.x, obstacle.y, null);
 
-            if (obstacle.x < 250 && obstacle.x > 80)
+            if (obstacle.x < 250 && obstacle.x > 100)
                 toggleJump();
         }
 
@@ -143,6 +134,28 @@ class GameCanvas extends JPanel implements Runnable {
         g.drawImage(imageDict.get("floor"), x % 1200, 550, null);
         g.drawImage(imageDict.get("floor"), x % 1200 + 1200, 550, null);
         g.drawImage(imageDict.get("floor"), x % 1200 + 1200 * 2, 550, null);
+
+        // Draw Dino
+        if (jumpX > 0) {
+            jumpY = getJumpY(jumpX);
+
+            jumpX++;
+            if (jumpY <= 0) {
+                jumpX = 0;
+                jumpY = 0;
+            }
+        }
+
+        dinoY = 517 - jumpY;
+
+        if (x / 100 % 2 == 0) {
+            g.drawImage(imageDict.get("d3"), dinoX, dinoY, null);
+        } else {
+            g.drawImage(imageDict.get("d4"), dinoX, dinoY, null);
+        }
+
+
+        // UI Area
 
         // Draw title text
         g.setColor(new Color(200, 200, 200));
@@ -153,17 +166,19 @@ class GameCanvas extends JPanel implements Runnable {
 
         // Draw value text
         g.setFont(new Font("ARCADECLASSIC", Font.BOLD, paddingTop));
-        util.drawAlignRightText(g, Integer.toString(score / 100), paddingRight, paddingTop + 35);
+        util.drawAlignRightText(g, Integer.toString(score / 50), paddingRight, paddingTop + 35);
         util.drawAlignRightText(g, Integer.toString(level), paddingRight, paddingTop + 105);
 
         // Draw health value
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++) {
             g.drawImage(imageDict.get("health"), 35 * i + paddingLeft, 55, null);
+        }
 
+        touchCheck();
 
-        level = (int) Math.floor(Math.pow(score / 25.0, 0.5));
+        level = (int) Math.floor(score / 1280.0) + 1 + 20;
         speed = level * 2;
-        jumpSpeed = 5 - (level - 1) * 0.1;
+        jumpSpeed = 3 - (level - 1) * 0.15;
         x -= speed;
     }
 
@@ -171,6 +186,16 @@ class GameCanvas extends JPanel implements Runnable {
         if (jumpX == 0) {
             jumpX = 1;
         }
+    }
+
+    public void touchCheck() {
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.x <= dinoX + 40 && obstacle.x >= dinoX && dinoY + 35 >= obstacle.y) {
+                System.out.println(cnt++);
+            }
+        }
+
+        getGraphics().drawRect(dinoX, dinoY, 40, 35);
     }
 
     @Override
