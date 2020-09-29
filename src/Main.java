@@ -78,6 +78,7 @@ class GameCanvas extends JPanel implements Runnable {
     String[] imageNameList = new String[]{"d1", "d2", "d3", "d4", "dx1", "fly_1", "fly_2", "floor", "health", "cloud"};
     Dictionary<String, BufferedImage> imageDict;
 
+    
     int x = 0;
     int jumpX = 0;
     int jumpY = 0;
