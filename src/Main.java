@@ -17,8 +17,8 @@ public class Main {
     static Thread gameThread;
 
     public static void main(String[] args) {
-        initFrame();
-        initThread();
+        initFrame();    // 初始化畫面
+        initThread();   // 初始化多執行緒
 
         gameThread.start();
     }
@@ -54,7 +54,7 @@ public class Main {
             }
         });
 
-        loadFonts();
+        loadFonts();    // 載入字型
 
         frame.add(canvas);
         frame.setVisible(true);
@@ -75,46 +75,97 @@ public class Main {
 }
 
 class GameCanvas extends JPanel implements Runnable {
-    String[] imageNameList = new String[]{"d1", "d2", "d3", "d4", "dx1", "fly_1", "fly_2", "floor", "health", "cloud"};
-    Dictionary<String, BufferedImage> imageDict;
+    String[] imageNameList = new String[]{  //  圖檔檔名清單
+            "d1", "d2", "d3", "d4", "dx1",
+            "fly_1", "fly_2",
+            "floor", "health", "cloud"
+    };
+    Dictionary<String, BufferedImage> imageDict;    // 影像字典
 
-    int x = 0;
-    int jumpX = 0;
-    int jumpY = 0;
-    int dinoX = 100;
-    int dinoY = 0;
-    double jumpSpeed = 3.0;
+    int x = 0;              // 地板捲動偏移
+    int jumpX = 0;          // 跳躍公式 X
+    int jumpY = 0;          // 跳躍公式 Y
+    int dinoX = 100;        // 主角 X 軸
+    int dinoY = 0;          // 主角 Y 軸
+    double jumpSpeed = 3.0; // 主角跳躍速度
 
-    int cnt = 0;
+    int cnt = 0;    // 碰撞次數
 
-    int level = 1;
-    int speed = 1;
-    int score = 0;
+    int level = 1;  // 等級
+    int speed = 1;  // 移動速度
+    int score = 0;  // 得分
 
+    // UI 內部填充距離
     int padding = 45;
     int paddingTop = padding;
     int paddingLeft = padding;
     int paddingRight = 1280 - (int) (padding * 1.4); // x1.4 調整字體偏移
 
+    // 遊戲物件
     Cloud[] clouds = new Cloud[8];
-    Obstacle[] obstacles = new Obstacle[2];
+    Obstacle[] obstacles = new Obstacle[5];
 
     public GameCanvas() {
-        imageDict = util.loadImages(imageNameList);
+        imageDict = util.loadImages(imageNameList); // 載入圖檔
 
+        // 初始化遊戲物件
         for (int i = 0; i < clouds.length; i++) {
             clouds[i] = new Cloud();
         }
 
-
         obstacles[0] = new Obstacle("dx1", 1);
-        obstacles[1] = new Obstacle("fly", 1.35);
+        obstacles[1] = new Obstacle("dx1", 2.5);
+        obstacles[2] = new Obstacle("dx1", 6.5);
+        obstacles[3] = new Obstacle("dx1", 9.5);
+        obstacles[4] = new Obstacle("fly", 1.35);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        drawGamePlay(g);
+    }
+
+    // 觸發跳躍
+    public void toggleJump() {
+        if (jumpX == 0) {
+            jumpX = 1;
+        }
+    }
+
+    // 碰撞判定
+    public void touchCheck() {
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.x <= dinoX + 40 && obstacle.x >= dinoX && dinoY + 35 >= obstacle.y) {
+                System.out.println(cnt++);
+            }
+        }
+
+        getGraphics().drawRect(dinoX, dinoY, 40, 35);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(10);
+                repaint();
+                score++;
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    // 跳躍公式
+    public int getJumpY(int x) {
+        return (int) -Math.pow((x / jumpSpeed - 9), 2) + 80;
+    }
+
+    // 繪製遊戲畫面
+    public void drawGamePlay(Graphics g) {
         // Draw clouds
         for (Cloud cloud : clouds) {
             cloud.update(speed);
@@ -176,43 +227,13 @@ class GameCanvas extends JPanel implements Runnable {
 
         touchCheck();
 
-        level = (int) Math.floor(score / 1280.0) + 1 + 20;
+        level = (int) Math.floor(score / 1280.0) + 1;
         speed = level * 2;
         jumpSpeed = 3 - (level - 1) * 0.15;
         x -= speed;
     }
+}
 
-    public void toggleJump() {
-        if (jumpX == 0) {
-            jumpX = 1;
-        }
-    }
-
-    public void touchCheck() {
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.x <= dinoX + 40 && obstacle.x >= dinoX && dinoY + 35 >= obstacle.y) {
-                System.out.println(cnt++);
-            }
-        }
-
-        getGraphics().drawRect(dinoX, dinoY, 40, 35);
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(10);
-                repaint();
-                score++;
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
-    public int getJumpY(int x) {
-        return (int) -Math.pow((x / jumpSpeed - 9), 2) + 80;
-    }
+class GamePlay {
+    
 }
