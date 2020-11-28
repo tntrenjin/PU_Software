@@ -1,4 +1,4 @@
-package gameplay;
+package gameobject;
 
 public class Cloud {
     public int x, y;

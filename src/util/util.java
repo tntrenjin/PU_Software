@@ -25,8 +25,18 @@ public class util {
     }
 
     public static void drawAlignRightText(Graphics g, String text, int x, int y) {
-
         int fontOffset = (int) (g.getFont().getSize() * (7 / 12.0));
         g.drawString(text, x - text.length() * fontOffset, y);
+    }
+
+    public static void drawAlignCenterText(Graphics g, String text, int x, int y) {
+
+        int cnt = 0;
+        for (int i = 0; i < text.length(); i++)
+            if (text.charAt(i) == ' ')
+                cnt++;
+
+        int fontOffset = (int) (g.getFont().getSize() * (7 / 12.0));
+        g.drawString(text, x - (text.length() * fontOffset - cnt * fontOffset / 3) / 2, y);
     }
 }
