@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Main {
     static JFrame frame;
@@ -49,6 +50,11 @@ public class Main {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/ARCADECLASSIC.TTF")));
             ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/Inlanders Demo.otf")));
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/BabaPro-Bold.ttf")));
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/Dades.ttf")));
+
+            //for(Font f : ge.getAllFonts())
+            //    System.out.println(f.getFamily());
         } catch (IOException | FontFormatException e) {
             System.out.println(e.getMessage());
         }
@@ -76,7 +82,6 @@ class GameCanvas extends JPanel implements Runnable, KeyListener {
 
         for (Scene g : sceneView) {
             g.initImages();
-            g.initKeyList();
         }
     }
 
@@ -88,11 +93,19 @@ class GameCanvas extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void run() {
+
+        int beforeScene = Scene.sceneID;
+
         while (true) {
             try {
                 Thread.sleep(10);
 
                 scene = Scene.sceneID;
+
+                if(scene != beforeScene) {
+                    sceneView[scene].reset();
+                    beforeScene = scene;
+                }
 
                 repaint();
 
@@ -112,9 +125,7 @@ class GameCanvas extends JPanel implements Runnable, KeyListener {
         int keyCode = e.getKeyCode();
 
         //System.out.println(keyCode);
-
-        if (sceneView[scene].keyList.contains(keyCode))
-            sceneView[scene].toggleKey(keyCode);
+        sceneView[scene].toggleKey(keyCode);
     }
 
     @Override

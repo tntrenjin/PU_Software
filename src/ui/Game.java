@@ -7,25 +7,28 @@ import java.awt.*;
 
 public class Game extends Scene {
 
-    boolean stop = false;
+    boolean stop = false;   // 遊戲暫停
 
     int x = 0;              // 地板捲動偏移
     int jumpX = 0;          // 跳躍公式 X
     int jumpY = 0;          // 跳躍公式 Y
     int dinoX = 100;        // 主角 X 軸
     int dinoY = 0;          // 主角 Y 軸
-    int restoreTimeCnt = 0;  // 復活時間 計數器
+    int restoreTimeCnt = 0; // 復活時間 計數器
     double jumpSpeed = 3.0; // 主角跳躍速度
 
-
-    int level = 1;  // 等級
-    int speed = 1;  // 移動速度
-    int score = 0;  // 得分
-
     // 固定參數
+    final int DEFAULT_HEALTH = 3;
+    final int DEFAULT_LEVEL = 1;
+    final int DEFAULT_SPEED = 1;
+    final int DEFAULT_SCORE = 0;
+    final int DEFAULT_FLOOR_X = 0;
     // 基本參數
     int health = 3;         // 生命
     int restoreTime = 400;  // 復活時間 10ms * N
+    int level = 1;  // 等級
+    int speed = 1;  // 移動速度
+    int score = 0;  // 得分
 
     // UI 內部填充距離
     int padding = 45;
@@ -53,7 +56,7 @@ public class Game extends Scene {
 
     public void initImages() {
         imageNameList = new String[]{          // 圖檔檔名清單
-                "d1", "d2", "d3", "d4", "dx1",
+                "d1", "d2", "d3", "d4", "dx1", "run_1", "run_2", "run_3",
                 "fly_1", "fly_2",
                 "floor", "health", "cloud"
         };
@@ -61,8 +64,13 @@ public class Game extends Scene {
         super.initImages();
     }
 
-    public void initKeyList() {
-        keyList.add(32);    // Space
+    public void reset() {
+        health = DEFAULT_HEALTH;
+        score = DEFAULT_SCORE;
+        speed = DEFAULT_SPEED;
+        level = DEFAULT_LEVEL;
+        x = DEFAULT_FLOOR_X;
+        stop = false;
     }
 
     public void restore() {
@@ -70,8 +78,8 @@ public class Game extends Scene {
 
         stop = false;
         x = 0;
-        level = 1;
-        score = 0;
+        level -= 1;
+        score = Math.max(score - 1280, 0);
         restoreTimeCnt = 0;
 
         for (Obstacle obstacle : obstacles)
@@ -80,7 +88,7 @@ public class Game extends Scene {
 
     // 觸發跳躍
     public void toggleKey(int keyCode) {
-        if (keyCode == 32) {
+        if (keyCode == Scene.KEY_SPACE) {
             if (jumpX == 0) {
                 jumpX = 1;
             }
@@ -90,15 +98,18 @@ public class Game extends Scene {
     // 碰撞判定
     public boolean touchCheck() {
         for (Obstacle obstacle : obstacles)
-            if (obstacle.x <= dinoX + 40 && obstacle.x >= dinoX && dinoY + 35 >= obstacle.y)
+            if (obstacle.x - dinoX < 60 && obstacle.x - dinoX > 20 && dinoY - obstacle.y > 0 && dinoY - obstacle.y < 30) {
+                System.out.println(obstacle.x - dinoX);
+                System.out.println(dinoY - obstacle.y);
                 return true;
+            }
         return false;
     }
 
 
     // 跳躍公式
     public int getJumpY(int x) {
-        return (int) -Math.pow((x / jumpSpeed - 9), 2) + 80;
+        return (int) -Math.pow((x / jumpSpeed - 9), 2) + 100;
     }
 
     // 繪製遊戲畫面
@@ -117,10 +128,15 @@ public class Game extends Scene {
         g.drawImage(imageDict.get("floor"), x % 1200 + 1200 * 2, 550, null);
 
         // Draw Dino
-        if (x / 100 % 2 == 0) {
-            g.drawImage(imageDict.get("d3"), dinoX, dinoY, null);
+        g.drawRect(dinoX, dinoY, 60, 30);
+        if (!stop) {
+            if (x / 100 % 2 == 0) {
+                g.drawImage(imageDict.get("run_1"), dinoX, dinoY, null);
+            } else {
+                g.drawImage(imageDict.get("run_2"), dinoX, dinoY, null);
+            }
         } else {
-            g.drawImage(imageDict.get("d4"), dinoX, dinoY, null);
+            g.drawImage(imageDict.get("run_3"), dinoX, dinoY - 30, null);
         }
 
 
@@ -165,7 +181,9 @@ public class Game extends Scene {
                     jumpY = 0;
                 }
             }
-            dinoY = 517 - jumpY;
+
+            //dinoY = 517 - jumpY;
+            dinoY = 535 - jumpY;
 
             level = (int) Math.floor(score / 1280.0) + 1;
             speed = level * 2;
@@ -174,7 +192,7 @@ public class Game extends Scene {
             score += 1;
 
         } else if (health == 1) {
-            goScene(2);
+            goScene(2, Integer.toString(score / 50));
         } else {
             double leftTime = (restoreTime - restoreTimeCnt) / 100.0;
 

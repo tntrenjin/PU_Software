@@ -8,6 +8,7 @@ import java.awt.*;
 public class Menu extends Scene {
 
     int nowSelect = 0;
+    int selectLen = 3;
 
     Cloud[] clouds = new Cloud[8];
 
@@ -16,12 +17,6 @@ public class Menu extends Scene {
         for (int i = 0; i < clouds.length; i++) {
             clouds[i] = new Cloud();
         }
-    }
-
-    public void initKeyList() {
-        keyList.add(38);    // Up arrow
-        keyList.add(40);    // Down arrow
-        keyList.add(10);    // Enter
     }
 
     public void initImages() {
@@ -41,8 +36,8 @@ public class Menu extends Scene {
 
 
         g.setColor(new Color(200, 200, 200));
-        g.setFont(new Font("Inlanders", Font.PLAIN, 85));
-        util.drawAlignCenterText(g, "RUN RUN GO", 640, 300);
+        g.setFont(new Font("Dades", Font.PLAIN, 85));
+        util.drawAlignCenterText(g, "RUN RUN GO", 640 - 25, 300);
 
         g.setFont(new Font("Inlanders", Font.PLAIN, 40));
 
@@ -62,12 +57,21 @@ public class Menu extends Scene {
 
     @Override
     public void toggleKey(int keyCode) {
-        if (keyCode == 38)
-            nowSelect = Math.abs(nowSelect - 1) % 3;
-        else if (keyCode == 40)
-            nowSelect = (nowSelect + 1) % 3;
-        else if (keyCode == 10)
-            goScene(1);
+        if (keyCode == Scene.KEY_ARROW_UP) {
+            if (nowSelect - 1 < 0)
+                nowSelect = selectLen - 1;
+            else
+                nowSelect = (nowSelect - 1) % selectLen;
+        } else if (keyCode == Scene.KEY_ARROW_DOWN)
+            nowSelect = (nowSelect + 1) % selectLen;
+        else if (keyCode == Scene.KEY_ENTER) {
+            if (nowSelect == 0)
+                goScene(1, "");
+            else if (nowSelect == 1)
+                goScene(2, "");
+            else
+                System.exit(0);
+        }
 
     }
 }

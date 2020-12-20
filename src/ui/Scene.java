@@ -9,18 +9,23 @@ import java.util.Dictionary;
 
 public class Scene {
 
-    public ArrayList<Integer> keyList = new ArrayList<Integer>();   // 鍵盤監聽
-    public static int sceneID = 1;  // 現在顯示的場景
-
     Dictionary<String, BufferedImage> imageDict;    // 影像字典
     String[] imageNameList = new String[]{};        // 圖檔檔名清單
 
+    // 按鍵編號常數
+    public final static int KEY_SPACE = 32;
+    public final static int KEY_ARROW_UP = 38;
+    public final static int KEY_ARROW_DOWN = 40;
+    public final static int KEY_ENTER = 10;
+
+    public static int sceneID = 0;  // 現在顯示的場景
+    private String args;
 
     public void initImages() {
         imageDict = util.loadImages(imageNameList); // 載入圖檔
     }
 
-    public void initKeyList() {
+    public void reset() {
     }
 
     public void draw(Graphics g) {
@@ -29,7 +34,12 @@ public class Scene {
     public void toggleKey(int keyCode) {
     }
 
-    public void goScene(int sceneID) {
+    public void goScene(int sceneID, String args) {
         Scene.sceneID = sceneID;
+        this.args = args;
+    }
+
+    public String getArgs() {
+        return args;
     }
 }
