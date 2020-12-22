@@ -37,7 +37,7 @@ public class Menu extends Scene {
 
         g.setColor(new Color(200, 200, 200));
         g.setFont(new Font("Dades", Font.PLAIN, 85));
-        util.drawAlignCenterText(g, "RUN RUN GO", 640 - 25, 300);
+        util.drawAlignCenterText(g, "HAMSTER RUN", 640 - 35, 300);
 
         g.setFont(new Font("Inlanders", Font.PLAIN, 40));
 
@@ -48,7 +48,7 @@ public class Menu extends Scene {
 
         if (nowSelect == 1) g.setColor(new Color(150, 150, 150));
         else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "Leaderboard", 640, 550);
+        util.drawAlignCenterText(g, "LeaderBoard", 640, 550);
 
         if (nowSelect == 2) g.setColor(new Color(150, 150, 150));
         else g.setColor(new Color(200, 200, 200));

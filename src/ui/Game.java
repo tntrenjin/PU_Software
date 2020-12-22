@@ -38,7 +38,7 @@ public class Game extends Scene {
 
     // 遊戲物件
     Cloud[] clouds = new Cloud[8];
-    Obstacle[] obstacles = new Obstacle[5];
+    Obstacle[] obstacles = new Obstacle[3];
 
     public Game() {
 
@@ -49,9 +49,7 @@ public class Game extends Scene {
 
         obstacles[0] = new Obstacle("dx1", 1);
         obstacles[1] = new Obstacle("dx1", 2.5);
-        obstacles[2] = new Obstacle("dx1", 6.5);
-        obstacles[3] = new Obstacle("dx1", 9.5);
-        obstacles[4] = new Obstacle("fly", 1.35);
+        obstacles[2] = new Obstacle("fly", 1.35);
     }
 
     public void initImages() {
@@ -71,6 +69,9 @@ public class Game extends Scene {
         level = DEFAULT_LEVEL;
         x = DEFAULT_FLOOR_X;
         stop = false;
+
+        for (Obstacle obstacle : obstacles)
+            obstacle.reset();
     }
 
     public void restore() {
@@ -92,15 +93,19 @@ public class Game extends Scene {
             if (jumpX == 0) {
                 jumpX = 1;
             }
+        } else if (keyCode == Scene.KEY_ARROW_DOWN) {
+            jumpX = 0;
+            jumpY = 0;
         }
     }
 
     // 碰撞判定
     public boolean touchCheck() {
         for (Obstacle obstacle : obstacles)
-            if (obstacle.x - dinoX < 60 && obstacle.x - dinoX > 20 && dinoY - obstacle.y > 0 && dinoY - obstacle.y < 30) {
-                System.out.println(obstacle.x - dinoX);
-                System.out.println(dinoY - obstacle.y);
+            if (obstacle.x - dinoX < 60 && obstacle.x - dinoX > 20 &&
+                    dinoY - obstacle.y > 0 && dinoY - obstacle.y < 30) {
+                //System.out.println(obstacle.x - dinoX);
+                //System.out.println(dinoY - obstacle.y);
                 return true;
             }
         return false;
@@ -128,9 +133,9 @@ public class Game extends Scene {
         g.drawImage(imageDict.get("floor"), x % 1200 + 1200 * 2, 550, null);
 
         // Draw Dino
-        g.drawRect(dinoX, dinoY, 60, 30);
+        //g.drawRect(dinoX, dinoY, 60, 30);
         if (!stop) {
-            if (x / 100 % 2 == 0) {
+            if (x / 25 % 2 == 0) {
                 g.drawImage(imageDict.get("run_1"), dinoX, dinoY, null);
             } else {
                 g.drawImage(imageDict.get("run_2"), dinoX, dinoY, null);
@@ -200,7 +205,10 @@ public class Game extends Scene {
                 g.setFont(new Font("ARCADECLASSIC", Font.BOLD, 80));
                 g.drawString("GAME OVER", 440, 300);
                 g.setFont(new Font("ARCADECLASSIC", Font.BOLD, 40));
-                g.drawString("RESTORE IN    " + (int) leftTime + "S", 500, 350);
+                g.drawString("RESTORE IN       SEC", 472, 350);
+
+                g.setColor(new Color(250, 100, 100));
+                g.drawString(Integer.toString((int) leftTime), 702, 350);
             } else {
                 g.setFont(new Font("ARCADECLASSIC", Font.BOLD, 100));
                 g.drawString("GO", 580, 300);

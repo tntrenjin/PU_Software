@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
     static JFrame frame;
@@ -65,10 +64,6 @@ class GameCanvas extends JPanel implements Runnable, KeyListener {
 
     Scene[] sceneView = new Scene[3];
 
-    Game game = new Game();
-    Menu menu = new Menu();
-    Leaderboard leaderboard = new Leaderboard();
-
     static int scene;
 
     GameCanvas() {
@@ -76,9 +71,9 @@ class GameCanvas extends JPanel implements Runnable, KeyListener {
     }
 
     public void initScene() {
-        sceneView[0] = menu;
-        sceneView[1] = game;
-        sceneView[2] = leaderboard;
+        sceneView[0] = new Menu();
+        sceneView[1] = new Game();
+        sceneView[2] = new LeaderBoard();
 
         for (Scene g : sceneView) {
             g.initImages();
@@ -96,22 +91,21 @@ class GameCanvas extends JPanel implements Runnable, KeyListener {
 
         int beforeScene = Scene.sceneID;
 
-        while (true) {
-            try {
+        try {
+            while (true) {
                 Thread.sleep(10);
 
                 scene = Scene.sceneID;
 
-                if(scene != beforeScene) {
+                if (scene != beforeScene) {
                     sceneView[scene].reset();
+                    System.out.println("Reset Scene:" + scene);
                     beforeScene = scene;
                 }
-
                 repaint();
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
             }
+        } catch (Exception e) {
+            System.out.println("Thread Error: " + e.getMessage());
         }
     }
 
