@@ -161,7 +161,7 @@ public class Game extends Scene {
 
         // Draw health value
         for (int i = 0; i < health; i++) {
-            g.drawImage(imageDict.get("health"), 35 * i + paddingLeft, 55, null);
+            g.drawImage(imageDict.get("health"), 45 * i + paddingLeft, 55, null);
         }
 
 
