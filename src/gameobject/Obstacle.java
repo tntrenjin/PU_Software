@@ -17,10 +17,10 @@ public class Obstacle {
     public void setPosY() {
         switch (this.type) {
             case "dx1":
-                y = 515;
+                y = 525;
                 break;
             case "fly":
-                y = 412;
+                y = 425;
                 break;
         }
     }

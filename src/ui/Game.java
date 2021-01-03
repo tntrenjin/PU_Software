@@ -56,7 +56,7 @@ public class Game extends Scene {
         imageNameList = new String[]{          // 圖檔檔名清單
                 "d1", "d2", "d3", "d4", "dx1", "run_1", "run_2", "run_3",
                 "fly_1", "fly_2",
-                "floor", "health", "cloud"
+                "floor_1", "health", "cloud"
         };
 
         super.initImages();
@@ -119,18 +119,21 @@ public class Game extends Scene {
 
     // 繪製遊戲畫面
     public void draw(Graphics g) {
+        super.draw(g);
+
         // Draw clouds
         for (Cloud cloud : clouds)
             g.drawImage(imageDict.get("cloud"), cloud.x, cloud.y, null);
+
+        // Draw Floor
+        g.drawImage(imageDict.get("floor_1"), x % 1200, 550, null);
+        g.drawImage(imageDict.get("floor_1"), x % 1200 + 1200, 550, null);
+        g.drawImage(imageDict.get("floor_1"), x % 1200 + 1200 * 2, 550, null);
 
         // Draw obstacles
         for (Obstacle obstacle : obstacles)
             g.drawImage(imageDict.get(obstacle.getImageName()), obstacle.x, obstacle.y, null);
 
-        // Draw Floor
-        g.drawImage(imageDict.get("floor"), x % 1200, 550, null);
-        g.drawImage(imageDict.get("floor"), x % 1200 + 1200, 550, null);
-        g.drawImage(imageDict.get("floor"), x % 1200 + 1200 * 2, 550, null);
 
         // Draw Dino
         //g.drawRect(dinoX, dinoY, 60, 30);
@@ -148,7 +151,7 @@ public class Game extends Scene {
         // UI Area
 
         // Draw title text
-        g.setColor(new Color(200, 200, 200));
+        g.setColor(COLOR_MAIN_FONT);
         g.setFont(new Font("ARCADECLASSIC", Font.PLAIN, 25));
         g.drawString("HEALTH", paddingLeft, paddingTop);
         util.drawAlignRightText(g, "SCORE", paddingRight, paddingTop);
@@ -188,7 +191,8 @@ public class Game extends Scene {
             }
 
             //dinoY = 517 - jumpY;
-            dinoY = 535 - jumpY;
+            //dinoY = 535 - jumpY;
+            dinoY = 545 - jumpY;
 
             level = (int) Math.floor(score / 1280.0) + 1;
             speed = level * 2;
@@ -205,7 +209,7 @@ public class Game extends Scene {
                 g.setFont(new Font("ARCADECLASSIC", Font.BOLD, 80));
                 g.drawString("GAME OVER", 440, 300);
                 g.setFont(new Font("ARCADECLASSIC", Font.BOLD, 40));
-                g.drawString("RESTORE IN       SEC", 472, 350);
+                g.drawString("RESTORE IN           SEC", 472, 350);
 
                 g.setColor(new Color(250, 100, 100));
                 g.drawString(Integer.toString((int) leftTime), 702, 350);

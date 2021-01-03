@@ -1,5 +1,6 @@
 package ui;
 
+import gameobject.Cloud;
 import util.util;
 
 import java.awt.*;
@@ -19,6 +20,13 @@ public class Scene {
     public final static int KEY_ARROW_RIGHT = 39;
     public final static int KEY_ARROW_DOWN = 40;
 
+    // 顏色常數
+    public final static Color COLOR_GAME_BACKGROUND = new Color(150, 220, 255, 90);
+    public final static Color COLOR_MAIN_FONT = Color.GRAY;
+    public final static Color COLOR_SELECT = new Color(64, 64, 64);
+    public final static Color COLOR_UNSELECT = new Color(255, 255, 255);
+    public final static Color COLOR_TITLE = new Color(36, 132, 163);
+
     public static int sceneID = 0;  // 現在顯示的場景
     private static String args = "";
 
@@ -30,6 +38,9 @@ public class Scene {
     }
 
     public void draw(Graphics g) {
+        // Draw background
+        g.setColor(Scene.COLOR_GAME_BACKGROUND);
+        g.fillRect(0, 0, 1280, 720);
     }
 
     public void toggleKey(int keyCode) {

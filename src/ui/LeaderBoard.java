@@ -15,6 +15,7 @@ public class LeaderBoard extends Scene {
     int nowSelect = 0;
     int selectLen = 3;
 
+    String[] selectList = new String[]{"||Menu||", "||PLAY||", "||EXIT||"};
     Cloud[] clouds = new Cloud[8];
 
     int[] historyScores = new int[]{-1, -1, -1};
@@ -45,16 +46,21 @@ public class LeaderBoard extends Scene {
 
     @Override
     public void draw(Graphics g) {
+        super.draw(g);
+
         // Draw clouds
         for (Cloud cloud : clouds) {
             cloud.update(5);
             g.drawImage(imageDict.get("cloud"), cloud.x, cloud.y, null);
         }
 
-        g.setColor(new Color(200, 200, 200));
-        g.setFont(new Font("Dades", Font.PLAIN, 70));
+        // Draw title
+        g.setColor(Scene.COLOR_TITLE);
+        g.setFont(new Font("Nuvel", Font.PLAIN, 70));
         g.drawString("HISTORICAL RECORD", 50, 100);
 
+        // Draw score result
+        g.setColor(Scene.COLOR_MAIN_FONT);
         String[] numStr = new String[]{"1st", "2nd", "3rd"};
         for (int i = 0; i < 3; i++) {
             if (historyScores[i] == -1)
@@ -66,19 +72,14 @@ public class LeaderBoard extends Scene {
             g.drawString(Integer.toString(historyScores[i]), 150, 200 + i * 100);
         }
 
-        g.setFont(new Font("Inlanders", Font.PLAIN, 40));
+        // Draw select text
+        g.setFont(new Font("Gobold Blocky", Font.PLAIN, 40));
+        for (int i = 0; i < selectList.length; i++) {
+            if (nowSelect == i) g.setColor(Scene.COLOR_SELECT);
+            else g.setColor(Scene.COLOR_UNSELECT);
+            g.drawString(selectList[i], 145 + (i * 440), 650);
+        }
 
-        if (nowSelect == 0) g.setColor(new Color(150, 150, 150));
-        else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "Menu", 200, 650);
-
-        if (nowSelect == 1) g.setColor(new Color(150, 150, 150));
-        else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "Play", 640, 650);
-
-        if (nowSelect == 2) g.setColor(new Color(150, 150, 150));
-        else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "EXIT", 1080, 650);
     }
 
     @Override

@@ -10,8 +10,8 @@ public class Menu extends Scene {
     int nowSelect = 0;
     int selectLen = 3;
 
+    String[] selectList = new String[]{"||Start Game||", "||LeaderBoard||", "||EXIT||"};
     Cloud[] clouds = new Cloud[8];
-
 
     public Menu() {
         for (int i = 0; i < clouds.length; i++) {
@@ -27,6 +27,7 @@ public class Menu extends Scene {
 
     @Override
     public void draw(Graphics g) {
+        super.draw(g);
 
         // Draw clouds
         for (Cloud cloud : clouds) {
@@ -34,35 +35,28 @@ public class Menu extends Scene {
             g.drawImage(imageDict.get("cloud"), cloud.x, cloud.y, null);
         }
 
+        // Draw title
+        g.setColor(Scene.COLOR_TITLE);
+        g.setFont(new Font("Nuvel", Font.PLAIN, 85));
+        util.drawAlignCenterText(g, "HAMSTER RUN", 640 + 10, 300);
 
-        g.setColor(new Color(200, 200, 200));
-        g.setFont(new Font("Dades", Font.PLAIN, 85));
-        util.drawAlignCenterText(g, "HAMSTER RUN", 640 - 35, 300);
-
-        g.setFont(new Font("Inlanders", Font.PLAIN, 40));
-
-
-        if (nowSelect == 0) g.setColor(new Color(150, 150, 150));
-        else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "Start Game", 640, 500);
-
-        if (nowSelect == 1) g.setColor(new Color(150, 150, 150));
-        else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "LeaderBoard", 640, 550);
-
-        if (nowSelect == 2) g.setColor(new Color(150, 150, 150));
-        else g.setColor(new Color(200, 200, 200));
-        util.drawAlignCenterText(g, "EXIT", 640, 600);
+        // Draw select text
+        g.setFont(new Font("Gobold Blocky", Font.PLAIN, 40));
+        for (int i = 0; i < selectList.length; i++) {
+            if (nowSelect == i) g.setColor(Scene.COLOR_SELECT);
+            else g.setColor(Scene.COLOR_UNSELECT);
+            g.drawString(selectList[i], 100 + (i * 440), 650);
+        }
     }
 
     @Override
     public void toggleKey(int keyCode) {
-        if (keyCode == Scene.KEY_ARROW_UP) {
+        if (keyCode == Scene.KEY_ARROW_LEFT) {
             if (nowSelect - 1 < 0)
                 nowSelect = selectLen - 1;
             else
                 nowSelect = (nowSelect - 1) % selectLen;
-        } else if (keyCode == Scene.KEY_ARROW_DOWN)
+        } else if (keyCode == Scene.KEY_ARROW_RIGHT)
             nowSelect = (nowSelect + 1) % selectLen;
         else if (keyCode == Scene.KEY_ENTER) {
             if (nowSelect == 0)

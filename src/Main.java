@@ -45,12 +45,22 @@ public class Main {
     }
 
     private static void loadFonts() {
+
+        String[] fontName = new String[]{
+                "ARCADECLASSIC.TTF",
+                "Inlanders Demo.otf",
+                "BabaPro-Bold.ttf",
+                "Dades.ttf",
+                "Qualy Bold.ttf",
+                "Nuvel.ttf",
+                "Gobold Blocky Regular.otf"
+        };
+
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/ARCADECLASSIC.TTF")));
-            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/Inlanders Demo.otf")));
-            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/BabaPro-Bold.ttf")));
-            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/Dades.ttf")));
+
+            for (String f : fontName)
+                ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("font/" + f)));
 
             //for(Font f : ge.getAllFonts())
             //    System.out.println(f.getFamily());
