@@ -9,7 +9,7 @@ public class Game extends Scene {
 
     boolean stop = false;   // 遊戲暫停
 
-    int x = 0;              // 地板捲動偏移
+    long x = 0;              // 地板捲動偏移
     int jumpX = 0;          // 跳躍公式 X
     int jumpY = 0;          // 跳躍公式 Y
     int dinoX = 100;        // 主角 X 軸
@@ -126,9 +126,8 @@ public class Game extends Scene {
             g.drawImage(imageDict.get("cloud"), cloud.x, cloud.y, null);
 
         // Draw Floor
-        g.drawImage(imageDict.get("floor_1"), x % 1200, 550, null);
-        g.drawImage(imageDict.get("floor_1"), x % 1200 + 1200, 550, null);
-        g.drawImage(imageDict.get("floor_1"), x % 1200 + 1200 * 2, 550, null);
+        for(int i = 0; i < 3; i++)
+            g.drawImage(imageDict.get("floor_1"), (int) (x % 1200 + 1200 * i), 550, null);
 
         // Draw obstacles
         for (Obstacle obstacle : obstacles)

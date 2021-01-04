@@ -1,9 +1,9 @@
 package ui;
 
 import gameobject.Cloud;
-import util.util;
 
 import java.awt.*;
+import java.awt.geom.GeneralPath;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -14,13 +14,13 @@ import java.util.Scanner;
 public class LeaderBoard extends Scene {
     int nowSelect = 0;
     int selectLen = 3;
+    int barHeight = 10;
+    String filePath = "./data.txt";
 
+    String[] numStr = new String[]{"1st", "2nd", "3rd"};
     String[] selectList = new String[]{"||Menu||", "||PLAY||", "||EXIT||"};
     Cloud[] clouds = new Cloud[8];
-
     int[] historyScores = new int[]{-1, -1, -1};
-
-    String filePath = "./data.txt";
 
 
     public LeaderBoard() {
@@ -61,15 +61,18 @@ public class LeaderBoard extends Scene {
 
         // Draw score result
         g.setColor(Scene.COLOR_MAIN_FONT);
-        String[] numStr = new String[]{"1st", "2nd", "3rd"};
         for (int i = 0; i < 3; i++) {
             if (historyScores[i] == -1)
                 break;
 
-            g.setFont(new Font("BABAPRO FONT", Font.PLAIN, 30 + (2 - i) * 5));
-            g.drawString(numStr[i], 50, 200 + i * 100);
-            g.setFont(new Font("BABAPRO FONT", Font.PLAIN, 50 + (2 - i) * 10));
-            g.drawString(Integer.toString(historyScores[i]), 150, 200 + i * 100);
+            int barWidth = (int) (historyScores[i] * 1.5);
+
+            g.setFont(new Font("Restaurant Menu Hollow", Font.PLAIN, 30));
+            g.drawString(numStr[i], 55, 180 + i * 100);
+            g.setFont(new Font("Restaurant Menu Book", Font.PLAIN, 50 + (2 - i) * 12));
+            g.drawString(Integer.toString(historyScores[i]), 100 + barWidth, 200 + i * 95);
+
+           g.fillRect(55, 180 + i * 100, barWidth, barHeight);
         }
 
         // Draw select text
